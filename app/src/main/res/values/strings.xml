@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Suivi Hydratation</string>
+    <string name="add_water">+ 250 ml</string>
+    <string name="reset">Réinitialiser</string>
+    <string name="goal_reached">Objectif atteint ! Félicitations ! 🎉</string>
+    <string name="remaining_amount">Encore %1$d ml pour atteindre votre objectif !</string>
+    <string name="remaining_amount_exceeded">Objectif dépassé de %1$d ml ! 🚀</string>
+    <string name="history_title">Journal d\'aujourd\'hui</string>
+    <string name="empty_history">Aucune gorgée enregistrée aujourd\'hui</string>
+    <string name="delete_content_description">Supprimer l\'entrée</string>
+    <string name="reset_content_description">Réinitialiser l\'historique</string>
+    <string name="water_drop_desc">Icône de goutte d\'eau</string>
+</resources>
