@@ -1,17 +1,15 @@
-import com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy
-
 plugins {
-  id("com.android.application") version "8.10.1"
-  id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
-  id("com.google.devtools.ksp") version "2.0.21-1.0.27"
-  id("io.github.takahirom.roborazzi") version "1.26.0"
-  id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1"
-  id("com.google.gms.google-services") version "4.4.2"
+  id("com.android.application")
+  id("org.jetbrains.kotlin.plugin.compose")
+  id("com.google.devtools.ksp")
+  id("io.github.takahirom.roborazzi")
+  id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+  id("com.google.gms.google-services")
 }
 
 android {
   namespace = "com.example"
-  compileSdk { version = release(36) { minorApiLevel = 1 } }
+  compileSdk = 36
 
   defaultConfig {
     applicationId = "com.aistudio.hydratation.wqbzvj"
@@ -68,10 +66,10 @@ secrets {
   defaultPropertiesFileName = ".env.example"
 }
 
+// Configuration sécurisée avec String pour éviter les conflits de classpath au build
 googleServices {
-  missingGoogleServicesStrategy = MissingGoogleServicesStrategy.WARN
+  missingGoogleServicesStrategy = com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy.WARN
 }
-
 
 // Some unused dependencies are commented out below instead of being removed.
 // This makes it easy to add them back in the future if needed.
