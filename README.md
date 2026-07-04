@@ -1,21 +1,67 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+#  Application Hydratation — Guide de Débogage Gradle
 
-# Run and deploy your AI Studio app
+Ce guide documente la résolution d'une incompatibilité critique de build Gradle survenue lors de l'importation initiale du projet généré par Google AI Studio.
 
-This contains everything you need to run your app locally.
+---
 
-View your app in AI Studio: https://ai.studio/apps/ead2e50a-38fa-405d-8da6-a582a1df7e4d
+##  Le Problème rencontré
 
-## Run Locally
+Au premier lancement, la synchronisation Gradle a échoué avec deux erreurs majeures bloquant l'initialisation du projet :
 
-**Prerequisites:**  [Android Studio](https://developer.android.com/studio)
+1. **Conflit de Version du Plugin Android (AGP) :** L'IDE (Android Studio / IntelliJ) tentait de forcer la version stable `8.10.1`, tandis qu'un catalogue de versions virtuel imposait la version `9.1.1` expérimentale sur le Classpath.
+2. **Erreur de Syntaxe du SDK :** Le script Kotlin DSL comportait une configuration de SDK non standard (`compileSdk { version = release(36) ... }`) provoquant une erreur de signature de type (`None of the following candidates is applicable`).
+3. **Conflit de Classpath avec Google Services :** L'importation directe de l'énumération `MissingGoogleServicesStrategy` provoquait un échec d'évaluation du script au chargement.
 
+---
 
-1. Open Android Studio
-2. Select **Open** and choose the directory containing this project
-3. Allow Android Studio to fix any incompatibilities as it imports the project.
-4. Create a file named `.env` in the project directory and set `GEMINI_API_KEY` in that file to your Gemini API key (see `.env.example` for an example)
-5. Remove this line from the app's `build.gradle.kts` file: `signingConfig = signingConfigs.getByName("debugConfig")`
-6. Run the app on an emulator or physical device
+##  Solutions Appliquées & Démarche de Résolution
+
+Pour stabiliser l'environnement sans altérer les dépendances requises par l'application, les corrections suivantes ont été apportées :
+
+### 1. Centralisation et Remplacement des Plugins (`build.gradle.kts` Racine)
+
+Les alias virtuels invisibles ont été contournés à la racine du projet pour imposer des versions de plugins parfaitement stables et compatibles avec l'IDE :
+
+```kotlin
+plugins {
+  id("com.android.application") version "8.10.1" apply false
+  id("org.jetbrains.kotlin.plugin.compose") version "2.0.21" apply false
+  id("com.google.devtools.ksp") version "2.0.21-1.0.27" apply false
+  id("io.github.takahirom.roborazzi") version "1.26.0" apply false
+  id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1" apply false
+  id("com.google.gms.google-services") version "4.4.2" apply false
+}
+```
+
+### 2. Standardisation du Module Application (`app/build.gradle.kts`)
+
+- **Allègement du bloc `plugins`** : Suppression des mentions de versions redondantes pour laisser la racine piloter l'alignement.
+- **Correction du SDK** : Remplacement de la structure imbriquée par la syntaxe stable standard :
+
+```kotlin
+compileSdk = 36
+```
+
+### 3. Résolution du Typage Strict pour Google Services
+
+Pour contourner les problèmes de cycle d'importation de types de l'interpréteur de scripts Kotlin, l'affectation de la stratégie en cas d'absence du fichier `google-services.json` a été qualifiée par son chemin complet (Fully Qualified Name) :
+
+```kotlin
+googleServices {
+  missingGoogleServicesStrategy = com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy.WARN
+}
+```
+
+---
+
+##  Résultat
+
+Après une invalidation complète des caches de l'IDE (`File > Invalidate Caches...`) et une nouvelle synchronisation des fichiers Gradle, le build a été validé avec succès (**BUILD SUCCESSFUL**) en téléchargeant l'intégralité du socle Jetpack Compose, Firebase AI et Room.
+
+---
+
+###  Message de commit suggéré pour l'ajout du fichier :
+
+> `docs: ajout du guide de débogage Gradle dans le README`
+##  Auteur
+**BAMBA OUSMANE rgl3B**
