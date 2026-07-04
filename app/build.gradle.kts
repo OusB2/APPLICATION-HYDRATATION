@@ -1,12 +1,12 @@
 import com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy
 
 plugins {
-  alias(libs.plugins.android.application)
-  alias(libs.plugins.kotlin.compose)
-  alias(libs.plugins.google.devtools.ksp)
-  alias(libs.plugins.roborazzi)
-  alias(libs.plugins.secrets)
-  alias(libs.plugins.google.services)
+  id("com.android.application") version "8.10.1"
+  id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
+  id("com.google.devtools.ksp") version "2.0.21-1.0.27"
+  id("io.github.takahirom.roborazzi") version "1.26.0"
+  id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1"
+  id("com.google.gms.google-services") version "4.4.2"
 }
 
 android {
